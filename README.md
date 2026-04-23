@@ -72,3 +72,4 @@ Una **máquina de Turing** es un modelo matemático fundamental en la computaci�
 ¡Las contribuciones son bienvenidas!
 Puedes abrir issues, enviar pull requests o sugerir nuevos algoritmos para simular.
 
+
