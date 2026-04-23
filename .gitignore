@@ -1,0 +1,60 @@
+# Node
+node_modules/
+
+# Angular
+/dist/
+/.angular/cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+
+# Logs
+*.log
+
+# IDEs
+.idea/
+*.iml
+
+# Build
+/build/
+
+# Misc
+*.swp
+*.swo
+
+# Coverage
+coverage/
+
+# Others
+*.bak
+*.tmp
+
+# Frontend build
+frontend/frontend/dist/
+
+# Backend build
+backend/__pycache__/
+
+# Ignore test output
+junit-*.xml
+
+# Ignore local settings
+*.local
+
+# Entorno virtual de Python
+venv/
+backend/venv/
+turing-simulator/backend/venv/
