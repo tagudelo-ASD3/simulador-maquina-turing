@@ -47,10 +47,10 @@ def execute(req: ExecuteRequest):
             if tm.current_state in tm.accept_states | tm.reject_states:
                 break
             steps.append(tm.step())
-        return {"steps": steps, "state_table": config["state_table"],
-                "description": config["description"]}
-    else:
-        result = tm.run()
-        return {"result": result, "history": tm.history,
-                "state_table": config["state_table"],
-                "description": config["description"]}
+        return {
+            "steps": steps,
+            "state_table": config["state_table"],
+            "description": config["description"],
+            "resultado": config.get("resultado", ""),
+            "decimal": config.get("decimal", ""),
+        }

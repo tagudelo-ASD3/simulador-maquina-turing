@@ -66,6 +66,26 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
             <span class="warn" *ngIf="errorEntrada2"
               >Solo se permiten 0 y 1</span
             >
+
+            <!-- Preview de la operación -->
+            <div
+              class="preview-box"
+              *ngIf="entrada1 && entrada2 && !errorEntrada1 && !errorEntrada2"
+            >
+              <span class="section-label" style="margin:0 0 4px"
+                >OPERACIÓN</span
+              >
+              <div style="margin-top:6px;font-size:13px;color:#8b949e">
+                <span class="accent">{{ entrada1 }}</span>
+                <span style="color:#d29922"> + </span>
+                <span class="accent">{{ entrada2 }}</span>
+                <span style="color:#6e7681"> = ?</span>
+              </div>
+              <div style="margin-top:4px;font-size:11px;color:#6e7681">
+                decimal: {{ parseBin(entrada1) }} + {{ parseBin(entrada2) }} =
+                {{ parseBin(entrada1) + parseBin(entrada2) }}
+              </div>
+            </div>
           </ng-container>
 
           <!-- ===== ESCRIBIR NOMBRE ===== -->
@@ -136,7 +156,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
               >
             </div>
 
-            <!-- Preview -->
             <div class="preview-box" *ngIf="preview">
               <span class="section-label" style="margin:0 0 4px"
                 >PREVIEW EN CINTA</span
@@ -173,7 +192,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
             ■ detener
           </button>
 
-          <!-- Estado -->
           <div class="status-box" *ngIf="pasos().length > 0">
             <div class="section-label">ESTADO ACTUAL</div>
             <div class="status-row">
@@ -259,17 +277,37 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
             </div>
             <div class="head-indicator">
               cabezal → posición
-              <span class="accent">{{ pasoActual()?.head }}</span> &nbsp;|&nbsp;
-              leyendo:
+              <span class="accent">{{ pasoActual()?.head }}</span>
+              &nbsp;|&nbsp; leyendo:
               <span class="accent"
                 >"{{ pasoActual()?.tape[pasoActual()?.head] }}"</span
               >
             </div>
-            <!-- Resultado de la suma binaria -->
-            <div *ngIf="algoritmo === 'binary_add' && !animando() && pasos().length > 0" style="margin-top:18px">
-              <span class="section-label" style="font-size:1rem;margin:0 0 6px 0;padding-left:8px;border-left:3px solid #3fb950;">RESULTADO</span>
-              <div style="margin-top:6px;font-size:1.2rem;color:#3fb950;font-family:'Courier New',monospace;">
-                {{ obtenerResultadoBinario() }}
+
+            <!-- Resultado suma binaria -->
+            <div
+              class="resultado-box"
+              *ngIf="algoritmo === 'binary_add' && !animando() && resultado()"
+            >
+              <span class="section-label" style="margin:0 0 8px"
+                >RESULTADO</span
+              >
+              <div class="resultado-grid">
+                <div class="resultado-item">
+                  <span class="resultado-label">binario</span>
+                  <span class="resultado-val accent">{{ resultado() }}</span>
+                </div>
+                <div class="resultado-item">
+                  <span class="resultado-label">decimal</span>
+                  <span class="resultado-val green">{{ decimal() }}</span>
+                </div>
+                <div class="resultado-item">
+                  <span class="resultado-label">operación</span>
+                  <span class="resultado-val" style="color:#d29922">
+                    {{ parseBin(entrada1) }} + {{ parseBin(entrada2) }} =
+                    {{ decimal() }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -351,16 +389,11 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
         font-size: 2.2rem;
         font-weight: bold;
         letter-spacing: 2px;
-        text-shadow:
-          0 2px 12px #1f6feb88,
-          0 1px 0 #30363d;
         font-family: 'Inter Tight', 'Segoe UI', Arial, sans-serif;
         background: linear-gradient(90deg, #58a6ff 0%, #a5d6ff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        text-fill-color: transparent;
-        transition: font-size 0.2s;
       }
       .header-status {
         margin-left: auto;
@@ -403,6 +436,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
         gap: 4px;
         overflow-y: auto;
       }
+
       .section-label {
         color: #fff;
         font-size: 1.15rem;
@@ -410,13 +444,11 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
         margin: 18px 0 10px;
         letter-spacing: 2px;
         text-transform: uppercase;
-        text-shadow: 0 2px 12px #1f6feb44;
         border-left: 5px solid #58a6ff;
         padding-left: 13px;
         background: linear-gradient(90deg, #161b22 80%, #58a6ff22 100%);
         border-radius: 3px;
         display: inline-block;
-        transition: all 0.2s;
       }
       .main-label {
         color: #a5d6ff;
@@ -436,6 +468,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
         margin-bottom: 12px;
         background: linear-gradient(90deg, #161b22 80%, #3fb95022 100%);
       }
+
       .field-label {
         color: #8b949e;
         font-size: 11px;
@@ -700,6 +733,37 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
         font-size: 12px;
       }
 
+      .resultado-box {
+        margin-top: 16px;
+        padding: 14px;
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-left: 4px solid #3fb950;
+        border-radius: 6px;
+      }
+      .resultado-grid {
+        display: flex;
+        gap: 24px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .resultado-item {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .resultado-label {
+        font-size: 10px;
+        color: #6e7681;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .resultado-val {
+        font-size: 22px;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+      }
+
       .table-wrapper {
         overflow-x: auto;
       }
@@ -785,47 +849,44 @@ export class AppComponent implements OnDestroy {
   indice = signal(0);
   tablaEstados = signal<any[]>([]);
   animando = signal(false);
+  resultado = signal('');
+  decimal = signal(0);
+
   private intervalo: any = null;
 
   pasoActual() {
     return this.pasos()[this.indice()] ?? null;
   }
 
-  // Transforma el nombre según las opciones elegidas
-  transformarNombre(nombre: string): string {
-    let resultado = nombre;
+  parseBin(bin: string): number {
+    if (!bin || !/^[01]+$/.test(bin)) return 0;
+    return parseInt(bin, 2);
+  }
 
+  transformarNombre(nombre: string): string {
+    let r = nombre;
     switch (this.casoNombre) {
       case 'upper':
-        resultado = nombre.toUpperCase();
+        r = nombre.toUpperCase();
         break;
       case 'lower':
-        resultado = nombre.toLowerCase();
+        r = nombre.toLowerCase();
         break;
       case 'title':
-        resultado =
-          nombre.charAt(0).toUpperCase() + nombre.slice(1).toLowerCase();
+        r = nombre.charAt(0).toUpperCase() + nombre.slice(1).toLowerCase();
         break;
       case 'alt':
-        resultado = nombre
+        r = nombre
           .split('')
           .map((c, i) => (i % 2 === 0 ? c.toUpperCase() : c.toLowerCase()))
           .join('');
         break;
     }
-
-    // Separador entre letras
-    if (this.separador) {
-      resultado = resultado.split('').join(this.separador);
-    }
-
-    // Repeticiones
-    const base = resultado;
-    for (let i = 1; i < this.repeticiones; i++) {
-      resultado += (this.separador ? this.separador : '') + base;
-    }
-
-    return resultado;
+    if (this.separador) r = r.split('').join(this.separador);
+    const base = r;
+    for (let i = 1; i < this.repeticiones; i++)
+      r += (this.separador || '') + base;
+    return r;
   }
 
   generarPreview() {
@@ -848,27 +909,28 @@ export class AppComponent implements OnDestroy {
     this.pasos.set([]);
     this.tablaEstados.set([]);
     this.indice.set(0);
+    this.resultado.set('');
+    this.decimal.set(0);
     this.errorEntrada1 = false;
     this.errorEntrada2 = false;
     this.preview = '';
-    if (nuevo === 'binary_add') {
-      this.entrada1 = '';
-      this.entrada2 = '';
-    } else {
-      this.entrada1 = '';
-      this.entrada2 = '';
+    this.entrada1 = '';
+    this.entrada2 = '';
+    if (nuevo === 'write_name') {
       this.casoNombre = 'upper';
       this.separador = '';
       this.repeticiones = 1;
       this.borrar = false;
-      this.generarPreview();
     }
   }
 
   ejecutar() {
+    if (this.errorEntrada1 || this.errorEntrada2) return;
+    if (!this.entrada1) return;
     this.detener();
+    this.resultado.set('');
+    this.decimal.set(0);
 
-    // Construir el nombre final con todas las transformaciones
     const nombreFinal =
       this.algoritmo === 'write_name'
         ? this.transformarNombre(this.entrada1) + (this.borrar ? '|BORRAR' : '')
@@ -886,6 +948,9 @@ export class AppComponent implements OnDestroy {
           this.pasos.set(res.steps);
           this.tablaEstados.set(res.state_table);
           this.indice.set(0);
+          // Guarda resultado que viene del backend
+          if (res.resultado) this.resultado.set(res.resultado);
+          if (res.decimal !== undefined) this.decimal.set(res.decimal);
           this.iniciarAnimacion();
         },
         error: (err) => console.error('Error:', err),
@@ -924,36 +989,6 @@ export class AppComponent implements OnDestroy {
     this.detener();
     this.indice.set(0);
     this.iniciarAnimacion();
-  }
-
-  // Obtiene el resultado binario final de la cinta (después de la animación)
-  obtenerResultadoBinario(): string {
-    if (this.pasos().length === 0) return '';
-    // Último paso
-    const final = this.pasos()[this.pasos().length - 1];
-    if (!final || !final.tape) return '';
-    // El resultado está después del separador '+' y antes del primer '_'
-    const tape = final.tape;
-    const plusIdx = tape.indexOf('+');
-    if (plusIdx === -1) return '';
-    // El resultado está a la derecha del '+'
-    let res = '';
-    for (let i = plusIdx + 1; i < tape.length; i++) {
-      if (tape[i] === '_' || tape[i] === undefined) break;
-      res += tape[i];
-    }
-    // Si el resultado está vacío, intenta buscar a la izquierda del '_'
-    if (!res) {
-      // Busca el primer '_'
-      let last = tape.lastIndexOf('_', tape.length - 1);
-      if (last === -1) last = tape.length;
-      // Busca desde el principio hasta '_', omitiendo '+'
-      for (let i = 0; i < last; i++) {
-        if (tape[i] !== '+' && tape[i] !== '_') res += tape[i];
-      }
-    }
-    // Elimina ceros a la izquierda
-    return res.replace(/^0+/, '') || '0';
   }
 
   ngOnDestroy() {
